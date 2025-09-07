@@ -1,0 +1,29 @@
+# Compiler
+CC = gcc
+
+# Compiler flags
+CFLAGS = -Iinclude -Llib -lraylib -lm -lpthread -ldl -lrt -lX11
+
+# Source files
+SRCS = src/main.c
+
+# Object files
+OBJS = $(SRCS:.c=.o)
+
+# Executable name
+EXEC = build/game
+
+# Default target
+all: $(EXEC)
+
+# Link the object files to create the executable
+$(EXEC): $(OBJS)
+	$(CC) -o $(EXEC) $(OBJS) $(CFLAGS)
+
+# Compile the source files into object files
+%.o: %.c
+	$(CC) -c $< -o $@ -Iinclude
+
+# Clean up the build files
+clean:
+	rm -f $(OBJS) $(EXEC)
