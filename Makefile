@@ -5,7 +5,7 @@ CC = gcc
 CFLAGS = -Iinclude -Llib -lraylib -lm -lpthread -ldl -lrt -lX11
 
 # Source files
-SRCS = src/main.c
+SRCS = src/main.c src/renderer.c
 
 # Object files
 OBJS = $(SRCS:.c=.o)
@@ -18,6 +18,7 @@ all: $(EXEC)
 
 # Link the object files to create the executable
 $(EXEC): $(OBJS)
+	mkdir -p build
 	$(CC) -o $(EXEC) $(OBJS) $(CFLAGS)
 
 # Compile the source files into object files
