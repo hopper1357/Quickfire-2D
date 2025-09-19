@@ -5,7 +5,7 @@ CC = gcc
 CFLAGS = -Iinclude -Llib -lraylib -lm -lpthread -ldl -lrt -lX11
 
 # Source files
-SRCS = src/main.c src/renderer.c src/sprite.c
+SRCS = src/main.c src/renderer.c src/sprite.c src/tilemap.c
 
 # Object files
 OBJS = $(SRCS:.c=.o)
