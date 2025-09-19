@@ -40,9 +40,7 @@ int main(void) {
 
         // Draw
         Renderer_Begin();
-        Core_Draw();
-        Game_Draw();
-        Editor_Draw();
+        Renderer_Draw();
         Renderer_End();
     }
 
