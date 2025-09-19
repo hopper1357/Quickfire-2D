@@ -1,72 +1,63 @@
-/*******************************************************************************************
-*
-*   raylib [core] example - basic window
-*
-*   Example complexity rating: [★☆☆☆] 1/4
-*
-*   Welcome to raylib!
-*
-*   To test examples, just press F6 and execute 'raylib_compile_execute' script
-*   Note that compiled executable is placed in the same folder as .c file
-*
-*   To test the examples on Web, press F6 and execute 'raylib_compile_execute_web' script
-*   Web version of the program is generated in the same folder as .c file
-*
-*   You can find all basic examples on C:\raylib\raylib\examples folder or
-*   raylib official webpage: www.raylib.com
-*
-*   Enjoy using raylib. :)
-*
-*   Example originally created with raylib 1.0, last time updated with raylib 1.0
-*
-*   Example licensed under an unmodified zlib/libpng license, which is an OSI-certified,
-*   BSD-like license that allows static linking with closed source software
-*
-*   Copyright (c) 2013-2025 Ramon Santamaria (@raysan5)
-*
-********************************************************************************************/
-
 #include "raylib.h"
+#include "core.h"
+#include "renderer.h"
+#include "input.h"
+#include "audio.h"
+#include "physics.h"
+#include "scripting.h"
+#include "game.h"
+#include "editor.h"
+#include "data.h"
 
-//------------------------------------------------------------------------------------
-// Program main entry point
-//------------------------------------------------------------------------------------
-int main(void)
-{
+int main(void) {
     // Initialization
-    //--------------------------------------------------------------------------------------
     const int screenWidth = 800;
     const int screenHeight = 450;
 
-    InitWindow(screenWidth, screenHeight, "raylib [core] example - basic window");
+    InitWindow(screenWidth, screenHeight, "Raylib JS Game Engine");
+    SetTargetFPS(60);
 
-    SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
-    //--------------------------------------------------------------------------------------
+    Core_Init();
+    Renderer_Init();
+    Input_Init();
+    Audio_Init();
+    Physics_Init();
+    Scripting_Init();
+    Game_Init();
+    Editor_Init();
+    Data_Init();
 
     // Main game loop
-    while (!WindowShouldClose())    // Detect window close button or ESC key
-    {
+    while (!WindowShouldClose()) {
         // Update
-        //----------------------------------------------------------------------------------
-        // TODO: Update your variables here
-        //----------------------------------------------------------------------------------
+        Core_Update();
+        Input_Update();
+        Audio_Update();
+        Physics_Update();
+        Scripting_Update();
+        Game_Update();
+        Editor_Update();
 
         // Draw
-        //----------------------------------------------------------------------------------
-        BeginDrawing();
-
-            ClearBackground(RAYWHITE);
-
-            DrawText("Hello, World!", 190, 200, 20, LIGHTGRAY);
-
-        EndDrawing();
-        //----------------------------------------------------------------------------------
+        Renderer_Begin();
+        Core_Draw();
+        Game_Draw();
+        Editor_Draw();
+        Renderer_End();
     }
 
     // De-Initialization
-    //--------------------------------------------------------------------------------------
-    CloseWindow();        // Close window and OpenGL context
-    //--------------------------------------------------------------------------------------
+    Data_Shutdown();
+    Editor_Shutdown();
+    Game_Shutdown();
+    Scripting_Shutdown();
+    Physics_Shutdown();
+    Audio_Shutdown();
+    Input_Shutdown();
+    Renderer_Shutdown();
+    Core_Shutdown();
+
+    CloseWindow();
 
     return 0;
 }
