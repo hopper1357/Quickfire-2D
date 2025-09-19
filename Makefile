@@ -5,7 +5,7 @@ CC = gcc
 CFLAGS = -Iinclude -Llib -lraylib -lm -lpthread -ldl -lrt -lX11
 
 # Source files
-SRCS = src/main.c
+SRCS = src/main.c src/renderer.c src/input.c
 
 # Object files
 OBJS = $(SRCS:.c=.o)
@@ -22,7 +22,7 @@ $(EXEC): $(OBJS)
 
 # Compile the source files into object files
 %.o: %.c
-	$(CC) -c $< -o $@ -Iinclude
+	$(CC) -c $< -o $@ $(CFLAGS)
 
 # Clean up the build files
 clean:

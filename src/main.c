@@ -1,72 +1,54 @@
-/*******************************************************************************************
-*
-*   raylib [core] example - basic window
-*
-*   Example complexity rating: [★☆☆☆] 1/4
-*
-*   Welcome to raylib!
-*
-*   To test examples, just press F6 and execute 'raylib_compile_execute' script
-*   Note that compiled executable is placed in the same folder as .c file
-*
-*   To test the examples on Web, press F6 and execute 'raylib_compile_execute_web' script
-*   Web version of the program is generated in the same folder as .c file
-*
-*   You can find all basic examples on C:\raylib\raylib\examples folder or
-*   raylib official webpage: www.raylib.com
-*
-*   Enjoy using raylib. :)
-*
-*   Example originally created with raylib 1.0, last time updated with raylib 1.0
-*
-*   Example licensed under an unmodified zlib/libpng license, which is an OSI-certified,
-*   BSD-like license that allows static linking with closed source software
-*
-*   Copyright (c) 2013-2025 Ramon Santamaria (@raysan5)
-*
-********************************************************************************************/
-
 #include "raylib.h"
+#include "renderer.h"
+#include "input.h"
 
-//------------------------------------------------------------------------------------
-// Program main entry point
-//------------------------------------------------------------------------------------
-int main(void)
-{
+int main(void) {
     // Initialization
-    //--------------------------------------------------------------------------------------
     const int screenWidth = 800;
     const int screenHeight = 450;
 
-    InitWindow(screenWidth, screenHeight, "raylib [core] example - basic window");
+    InitWindow(screenWidth, screenHeight, "Input System Example");
+    SetTargetFPS(60);
 
-    SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
-    //--------------------------------------------------------------------------------------
+    // Initialize the renderer and input system
+    Renderer_Init();
+    Input_Init();
+
+    // Create a player texture
+    Image player_image = GenImageColor(50, 50, RED);
+    Texture2D player_texture = LoadTextureFromImage(player_image);
+    UnloadImage(player_image);
+
+    // Player position
+    Vector2 player_position = { screenWidth / 2, screenHeight / 2 };
 
     // Main game loop
-    while (!WindowShouldClose())    // Detect window close button or ESC key
-    {
+    while (!WindowShouldClose()) {
         // Update
-        //----------------------------------------------------------------------------------
-        // TODO: Update your variables here
-        //----------------------------------------------------------------------------------
+        if (Input_IsActionDown(ACTION_MOVE_UP)) player_position.y -= 5;
+        if (Input_IsActionDown(ACTION_MOVE_DOWN)) player_position.y += 5;
+        if (Input_IsActionDown(ACTION_MOVE_LEFT)) player_position.x -= 5;
+        if (Input_IsActionDown(ACTION_MOVE_RIGHT)) player_position.x += 5;
+
+        Renderable r = {
+            .texture = player_texture,
+            .sourceRect = { 0, 0, 50, 50 },
+            .position = player_position,
+            .tint = WHITE,
+            .layer = LAYER_GAME
+        };
+        Renderer_AddRenderable(r);
 
         // Draw
-        //----------------------------------------------------------------------------------
-        BeginDrawing();
-
-            ClearBackground(RAYWHITE);
-
-            DrawText("Hello, World!", 190, 200, 20, LIGHTGRAY);
-
-        EndDrawing();
-        //----------------------------------------------------------------------------------
+        Renderer_Begin();
+        Renderer_Draw();
+        Renderer_End();
     }
 
     // De-Initialization
-    //--------------------------------------------------------------------------------------
-    CloseWindow();        // Close window and OpenGL context
-    //--------------------------------------------------------------------------------------
+    UnloadTexture(player_texture);
+    Renderer_Shutdown();
+    CloseWindow();
 
     return 0;
 }
