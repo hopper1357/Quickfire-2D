@@ -1,42 +1,49 @@
 #include "raylib.h"
-#include "core.h"
 #include "renderer.h"
-#include "input.h"
-#include "audio.h"
-#include "physics.h"
-#include "scripting.h"
-#include "game.h"
-#include "editor.h"
-#include "data.h"
+#include "sprite.h"
 
 int main(void) {
     // Initialization
     const int screenWidth = 800;
     const int screenHeight = 450;
 
-    InitWindow(screenWidth, screenHeight, "Raylib JS Game Engine");
+    InitWindow(screenWidth, screenHeight, "Sprite Animation Example");
     SetTargetFPS(60);
 
-    Core_Init();
+    // Initialize the renderer
     Renderer_Init();
-    Input_Init();
-    Audio_Init();
-    Physics_Init();
-    Scripting_Init();
-    Game_Init();
-    Editor_Init();
-    Data_Init();
+
+    // Generate a simple spritesheet
+    Image image = GenImageColor(200, 50, BLANK);
+    ImageDrawRectangle(&image, 0, 0, 50, 50, RED);
+    ImageDrawRectangle(&image, 50, 0, 50, 50, GREEN);
+    ImageDrawRectangle(&image, 100, 0, 50, 50, BLUE);
+    ImageDrawRectangle(&image, 150, 0, 50, 50, YELLOW);
+    Texture2D player_spritesheet = LoadTextureFromImage(image);
+    UnloadImage(image);
+
+    // Create a sprite
+    Sprite* player_sprite = Sprite_Create(player_spritesheet);
+
+    // Define an animation
+    Animation anim;
+    anim.frame_count = 4;
+    anim.frame_rate = 4;
+    anim.frames[0] = (Rectangle){ 0, 0, 50, 50 };
+    anim.frames[1] = (Rectangle){ 50, 0, 50, 50 };
+    anim.frames[2] = (Rectangle){ 100, 0, 50, 50 };
+    anim.frames[3] = (Rectangle){ 150, 0, 50, 50 };
+
+    // Add and play the animation
+    Sprite_AddAnimation(player_sprite, anim);
+    Sprite_PlayAnimation(player_sprite, 0);
 
     // Main game loop
     while (!WindowShouldClose()) {
         // Update
-        Core_Update();
-        Input_Update();
-        Audio_Update();
-        Physics_Update();
-        Scripting_Update();
-        Game_Update();
-        Editor_Update();
+        Sprite_Update(player_sprite);
+        Renderable r = Sprite_GetRenderable(player_sprite, (Vector2){ 100, 100 }, LAYER_GAME, WHITE);
+        Renderer_AddRenderable(r);
 
         // Draw
         Renderer_Begin();
@@ -45,16 +52,9 @@ int main(void) {
     }
 
     // De-Initialization
-    Data_Shutdown();
-    Editor_Shutdown();
-    Game_Shutdown();
-    Scripting_Shutdown();
-    Physics_Shutdown();
-    Audio_Shutdown();
-    Input_Shutdown();
+    Sprite_Destroy(player_sprite);
+    UnloadTexture(player_spritesheet);
     Renderer_Shutdown();
-    Core_Shutdown();
-
     CloseWindow();
 
     return 0;

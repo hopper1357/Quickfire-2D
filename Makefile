@@ -5,7 +5,7 @@ CC = gcc
 CFLAGS = -Iinclude -Llib -lraylib -lm -lpthread -ldl -lrt -lX11
 
 # Source files
-SRCS = $(shell find src -name '*.c')
+SRCS = src/main.c src/renderer.c src/sprite.c
 
 # Object files
 OBJS = $(SRCS:.c=.o)

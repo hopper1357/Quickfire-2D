@@ -14,7 +14,9 @@ typedef enum {
 
 typedef struct {
     Texture2D texture;
+    Rectangle sourceRect;
     Vector2 position;
+    Color tint;
     RenderLayer layer;
 } Renderable;
 
@@ -22,7 +24,7 @@ void Renderer_Init(void);
 void Renderer_Shutdown(void);
 void Renderer_Begin(void);
 void Renderer_End(void);
-void Renderer_AddRenderable(Renderable* renderable);
+void Renderer_AddRenderable(Renderable renderable);
 void Renderer_Draw(void);
 
 #endif // RENDERER_H
