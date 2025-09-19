@@ -1,5 +1,4 @@
 #include "raylib.h"
-#include "renderer.h"
 #include "input.h"
 
 int main(void) {
@@ -10,44 +9,34 @@ int main(void) {
     InitWindow(screenWidth, screenHeight, "Input System Example");
     SetTargetFPS(60);
 
-    // Initialize the renderer and input system
-    Renderer_Init();
+    // Initialize the input system
     Input_Init();
 
-    // Create a player texture
-    Image player_image = GenImageColor(50, 50, RED);
-    Texture2D player_texture = LoadTextureFromImage(player_image);
-    UnloadImage(player_image);
-
-    // Player position
-    Vector2 player_position = { screenWidth / 2, screenHeight / 2 };
+    // Create a player rectangle
+    Rectangle player = { screenWidth / 2, screenHeight / 2, 50, 50 };
 
     // Main game loop
     while (!WindowShouldClose()) {
         // Update
-        if (Input_IsActionDown(ACTION_MOVE_UP)) player_position.y -= 5;
-        if (Input_IsActionDown(ACTION_MOVE_DOWN)) player_position.y += 5;
-        if (Input_IsActionDown(ACTION_MOVE_LEFT)) player_position.x -= 5;
-        if (Input_IsActionDown(ACTION_MOVE_RIGHT)) player_position.x += 5;
+        if (Input_IsActionDown(ACTION_MOVE_UP)) player.y -= 5;
+        if (Input_IsActionDown(ACTION_MOVE_DOWN)) player.y += 5;
+        if (Input_IsActionDown(ACTION_MOVE_LEFT)) player.x -= 5;
+        if (Input_IsActionDown(ACTION_MOVE_RIGHT)) player.x += 5;
 
-        Renderable r = {
-            .texture = player_texture,
-            .sourceRect = { 0, 0, 50, 50 },
-            .position = player_position,
-            .tint = WHITE,
-            .layer = LAYER_GAME
-        };
-        Renderer_AddRenderable(r);
+        if (Input_IsActionPressed(ACTION_PRIMARY_ATTACK)) {
+            Vector2 mousePos = Input_GetMousePosition();
+            player.x = mousePos.x - player.width / 2;
+            player.y = mousePos.y - player.height / 2;
+        }
 
         // Draw
-        Renderer_Begin();
-        Renderer_Draw();
-        Renderer_End();
+        BeginDrawing();
+        ClearBackground(RAYWHITE);
+        DrawRectangleRec(player, RED);
+        EndDrawing();
     }
 
     // De-Initialization
-    UnloadTexture(player_texture);
-    Renderer_Shutdown();
     CloseWindow();
 
     return 0;
