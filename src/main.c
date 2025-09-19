@@ -1,70 +1,52 @@
 #include "raylib.h"
 #include "renderer.h"
-#include "tilemap.h"
-
-#define MAP_WIDTH 10
-#define MAP_HEIGHT 10
+#include "input.h"
 
 int main(void) {
     // Initialization
     const int screenWidth = 800;
     const int screenHeight = 450;
 
-    InitWindow(screenWidth, screenHeight, "Tilemap Example");
+    InitWindow(screenWidth, screenHeight, "Input System Example");
     SetTargetFPS(60);
 
-    // Initialize the renderer
+    // Initialize the renderer and input system
     Renderer_Init();
+    Input_Init();
 
-    // Generate a simple tileset (2x2 tiles of different colors)
-    Image image = GenImageColor(32, 32, BLANK);
-    ImageDrawRectangle(&image, 0, 0, 16, 16, RED);
-    ImageDrawRectangle(&image, 16, 0, 16, 16, GREEN);
-    ImageDrawRectangle(&image, 0, 16, 16, 16, BLUE);
-    ImageDrawRectangle(&image, 16, 16, 16, 16, YELLOW);
-    Texture2D tileset_texture = LoadTextureFromImage(image);
-    UnloadImage(image);
+    // Create a player texture
+    Image player_image = GenImageColor(50, 50, RED);
+    Texture2D player_texture = LoadTextureFromImage(player_image);
+    UnloadImage(player_image);
 
-    // Create a tileset
-    Tileset tileset = {
-        .texture = tileset_texture,
-        .tile_width = 16,
-        .tile_height = 16,
-        .tiles_per_row = 2
-    };
-
-    // Define map data
-    int map_data[MAP_WIDTH * MAP_HEIGHT] = {
-        0, 1, 0, 1, 0, 1, 0, 1, 0, 1,
-        1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
-        0, 1, 0, 1, 0, 1, 0, 1, 0, 1,
-        1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
-        0, 1, 0, 1, 0, 1, 0, 1, 0, 1,
-        1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
-        0, 1, 0, 1, 0, 1, 0, 1, 0, 1,
-        1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
-        3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-        3, 3, 3, 3, 3, 3, 3, 3, 3, 3
-    };
-
-    // Create a tilemap
-    Tilemap* tilemap = Tilemap_Create(&tileset, MAP_WIDTH, MAP_HEIGHT, map_data);
+    // Player position
+    Vector2 player_position = { screenWidth / 2, screenHeight / 2 };
 
     // Main game loop
     while (!WindowShouldClose()) {
         // Update
-        // (Nothing to update for this example)
+        if (Input_IsActionDown(ACTION_MOVE_UP)) player_position.y -= 5;
+        if (Input_IsActionDown(ACTION_MOVE_DOWN)) player_position.y += 5;
+        if (Input_IsActionDown(ACTION_MOVE_LEFT)) player_position.x -= 5;
+        if (Input_IsActionDown(ACTION_MOVE_RIGHT)) player_position.x += 5;
+
+        Renderable r = {
+            .texture = player_texture,
+            .sourceRect = { 0, 0, 50, 50 },
+            .position = player_position,
+            .tint = WHITE,
+            .layer = LAYER_GAME
+        };
+        Renderer_AddRenderable(r);
 
         // Draw
         Renderer_Begin();
-        Tilemap_Draw(tilemap, LAYER_BACKGROUND);
         Renderer_Draw();
         Renderer_End();
     }
 
     // De-Initialization
-    Tilemap_Destroy(tilemap);
-    UnloadTexture(tileset_texture);
+    UnloadTexture(player_texture);
     Renderer_Shutdown();
     CloseWindow();
 
