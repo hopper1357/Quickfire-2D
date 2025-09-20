@@ -1,12 +1,15 @@
 #include "raylib.h"
 #include "input.h"
 
+// For this example, we'll remove the renderer to keep it simple
+// and focus on the input system.
+
 int main(void) {
     // Initialization
     const int screenWidth = 800;
     const int screenHeight = 450;
 
-    InitWindow(screenWidth, screenHeight, "Input System Example");
+    InitWindow(screenWidth, screenHeight, "Gamepad Input Example");
     SetTargetFPS(60);
 
     // Initialize the input system
@@ -18,11 +21,18 @@ int main(void) {
     // Main game loop
     while (!WindowShouldClose()) {
         // Update
+
+        // Keyboard movement
         if (Input_IsActionDown(ACTION_MOVE_UP)) player.y -= 5;
         if (Input_IsActionDown(ACTION_MOVE_DOWN)) player.y += 5;
         if (Input_IsActionDown(ACTION_MOVE_LEFT)) player.x -= 5;
         if (Input_IsActionDown(ACTION_MOVE_RIGHT)) player.x += 5;
 
+        // Gamepad analog movement
+        player.x += Input_GetActionValue(ACTION_HORIZONTAL_AXIS) * 5.0f;
+        player.y += Input_GetActionValue(ACTION_VERTICAL_AXIS) * 5.0f;
+
+        // Mouse teleport
         if (Input_IsActionPressed(ACTION_PRIMARY_ATTACK)) {
             Vector2 mousePos = Input_GetMousePosition();
             player.x = mousePos.x - player.width / 2;
@@ -33,6 +43,7 @@ int main(void) {
         BeginDrawing();
         ClearBackground(RAYWHITE);
         DrawRectangleRec(player, RED);
+        DrawText("Use WASD, Gamepad Left Stick, or Mouse Click", 10, 10, 20, DARKGRAY);
         EndDrawing();
     }
 
