@@ -18,7 +18,7 @@ void Input_Init(void) {
     // Gamepad bindings
     bindings[ACTION_HORIZONTAL_AXIS] = (InputBinding){ .type = INPUT_TYPE_GAMEPAD_AXIS, .binding = GAMEPAD_AXIS_LEFT_X };
     bindings[ACTION_VERTICAL_AXIS] = (InputBinding){ .type = INPUT_TYPE_GAMEPAD_AXIS, .binding = GAMEPAD_AXIS_LEFT_Y };
-    bindings[ACTION_PRIMARY_ATTACK] = (InputBinding){ .type = INPUT_TYPE_GAMEPAD_BUTTON, .binding = GAMEPAD_BUTTON_RIGHT_FACE_DOWN };
+    bindings[ACTION_GAMEPAD_ATTACK] = (InputBinding){ .type = INPUT_TYPE_GAMEPAD_BUTTON, .binding = GAMEPAD_BUTTON_RIGHT_FACE_DOWN };
 }
 
 bool Input_IsActionPressed(GameAction action) {
