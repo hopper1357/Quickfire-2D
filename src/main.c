@@ -1,15 +1,12 @@
 #include "raylib.h"
 #include "input.h"
 
-// For this example, we'll remove the renderer to keep it simple
-// and focus on the input system.
-
 int main(void) {
     // Initialization
     const int screenWidth = 800;
     const int screenHeight = 450;
 
-    InitWindow(screenWidth, screenHeight, "Gamepad Input Example");
+    InitWindow(screenWidth, screenHeight, "Input System Example");
     SetTargetFPS(60);
 
     // Initialize the input system

@@ -1,4 +1,7 @@
 #include "input.h"
+#include <math.h> // For fabsf
+
+#define GAMEPAD_AXIS_DEADZONE 0.25f
 
 static InputBinding bindings[MAX_ACTIONS];
 
@@ -15,8 +18,7 @@ void Input_Init(void) {
     // Gamepad bindings
     bindings[ACTION_HORIZONTAL_AXIS] = (InputBinding){ .type = INPUT_TYPE_GAMEPAD_AXIS, .binding = GAMEPAD_AXIS_LEFT_X };
     bindings[ACTION_VERTICAL_AXIS] = (InputBinding){ .type = INPUT_TYPE_GAMEPAD_AXIS, .binding = GAMEPAD_AXIS_LEFT_Y };
-    // You can also bind gamepad buttons to actions, e.g.:
-    // bindings[ACTION_PRIMARY_ATTACK] = (InputBinding){ .type = INPUT_TYPE_GAMEPAD_BUTTON, .binding = GAMEPAD_BUTTON_RIGHT_FACE_DOWN };
+    bindings[ACTION_PRIMARY_ATTACK] = (InputBinding){ .type = INPUT_TYPE_GAMEPAD_BUTTON, .binding = GAMEPAD_BUTTON_RIGHT_FACE_DOWN };
 }
 
 bool Input_IsActionPressed(GameAction action) {
@@ -50,7 +52,11 @@ Vector2 Input_GetMousePosition(void) {
 float Input_GetActionValue(GameAction action) {
     InputBinding binding = bindings[action];
     if (binding.type == INPUT_TYPE_GAMEPAD_AXIS) {
-        return GetGamepadAxisMovement(0, binding.binding);
+        float value = GetGamepadAxisMovement(0, binding.binding);
+        if (fabsf(value) > GAMEPAD_AXIS_DEADZONE) {
+            return value;
+        }
+        return 0.0f;
     }
     // For digital inputs, we can return 1.0f if the action is down, 0.0f otherwise
     return Input_IsActionDown(action) ? 1.0f : 0.0f;
