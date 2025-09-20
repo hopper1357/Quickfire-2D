@@ -48,9 +48,13 @@ void LoadDefaultBindings() {
 }
 
 void Input_Init(void) {
+    // First, load the default bindings to ensure a stable state.
+    LoadDefaultBindings();
+
+    // Now, try to load custom bindings from config.json.
     FILE* fp = fopen("config.json", "r");
     if (fp == NULL) {
-        LoadDefaultBindings();
+        // File doesn't exist, so we'll just use the defaults.
         return;
     }
 
@@ -66,42 +70,41 @@ void Input_Init(void) {
 
     struct json_value_s* root = json_parse(json_string, file_size);
     if (root == NULL) {
-        LoadDefaultBindings();
+        // JSON is invalid, so we'll just use the defaults.
         free(json_string);
         return;
     }
 
     struct json_object_s* object = json_value_as_object(root);
-    if (object == NULL) {
-        LoadDefaultBindings();
-        free(json_string);
-        free(root);
-        return;
-    }
+    if (object != NULL) {
+        struct json_object_element_s* bindings_obj_el = object->start;
+        if (bindings_obj_el != NULL) {
+            struct json_object_s* bindings_obj = json_value_as_object(bindings_obj_el->value);
+            if (bindings_obj != NULL) {
+                for (struct json_object_element_s* el = bindings_obj->start; el != NULL; el = el->next) {
+                    GameAction action = GetActionFromString(el->name->string);
+                    if (action < MAX_ACTIONS) {
+                        struct json_object_s* binding_details = json_value_as_object(el->value);
+                        struct json_string_s* type_str = NULL;
+                        struct json_number_s* binding_num = NULL;
 
-    struct json_object_element_s* bindings_obj_el = object->start;
-    struct json_object_s* bindings_obj = json_value_as_object(bindings_obj_el->value);
+                        for (struct json_object_element_s* detail = binding_details->start; detail != NULL; detail = detail->next) {
+                            if (strcmp(detail->name->string, "type") == 0) {
+                                type_str = json_value_as_string(detail->value);
+                            } else if (strcmp(detail->name->string, "binding") == 0) {
+                                binding_num = json_value_as_number(detail->value);
+                            }
+                        }
 
-    for (struct json_object_element_s* el = bindings_obj->start; el != NULL; el = el->next) {
-        GameAction action = GetActionFromString(el->name->string);
-        if (action < MAX_ACTIONS) {
-            struct json_object_s* binding_details = json_value_as_object(el->value);
-            struct json_string_s* type_str = NULL;
-            struct json_number_s* binding_num = NULL;
-
-            for (struct json_object_element_s* detail = binding_details->start; detail != NULL; detail = detail->next) {
-                if (strcmp(detail->name->string, "type") == 0) {
-                    type_str = json_value_as_string(detail->value);
-                } else if (strcmp(detail->name->string, "binding") == 0) {
-                    binding_num = json_value_as_number(detail->value);
-                }
-            }
-
-            if(type_str && binding_num) {
-                InputType type = GetInputTypeFromString(type_str->string);
-                int binding_val = atoi(binding_num->number);
-                if (type != -1) {
-                    bindings[action] = (InputBinding){ .type = type, .binding = binding_val };
+                        if(type_str && binding_num) {
+                            InputType type = GetInputTypeFromString(type_str->string);
+                            int binding_val = atoi(binding_num->number);
+                            if (type != -1) {
+                                // Overwrite the default binding with the custom one.
+                                bindings[action] = (InputBinding){ .type = type, .binding = binding_val };
+                            }
+                        }
+                    }
                 }
             }
         }
