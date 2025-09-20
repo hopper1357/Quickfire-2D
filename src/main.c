@@ -29,8 +29,8 @@ int main(void) {
         player.x += Input_GetActionValue(ACTION_HORIZONTAL_AXIS) * 5.0f;
         player.y += Input_GetActionValue(ACTION_VERTICAL_AXIS) * 5.0f;
 
-        // Mouse teleport
-        if (Input_IsActionPressed(ACTION_PRIMARY_ATTACK)) {
+        // Mouse or Gamepad teleport
+        if (Input_IsActionPressed(ACTION_PRIMARY_ATTACK) || Input_IsActionPressed(ACTION_GAMEPAD_ATTACK)) {
             Vector2 mousePos = Input_GetMousePosition();
             player.x = mousePos.x - player.width / 2;
             player.y = mousePos.y - player.height / 2;

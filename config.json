@@ -1,0 +1,12 @@
+{
+    "bindings": {
+        "ACTION_MOVE_UP": { "type": "KEY", "binding": 87 },
+        "ACTION_MOVE_DOWN": { "type": "KEY", "binding": 83 },
+        "ACTION_MOVE_LEFT": { "type": "KEY", "binding": 65 },
+        "ACTION_MOVE_RIGHT": { "type": "KEY", "binding": 68 },
+        "ACTION_PRIMARY_ATTACK": { "type": "MOUSE", "binding": 0 },
+        "ACTION_GAMEPAD_ATTACK": { "type": "GAMEPAD_BUTTON", "binding": 2 },
+        "ACTION_HORIZONTAL_AXIS": { "type": "GAMEPAD_AXIS", "binding": 0 },
+        "ACTION_VERTICAL_AXIS": { "type": "GAMEPAD_AXIS", "binding": 1 }
+    }
+}
