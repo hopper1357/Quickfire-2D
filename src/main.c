@@ -1,5 +1,6 @@
 #include "raylib.h"
 #include "renderer.h"
+#include <stddef.h>
 
 int main(void)
 {
@@ -8,7 +9,18 @@ int main(void)
 
     InitWindow(screenWidth, screenHeight, "Raylib JS Game Engine");
 
+    if (!IsWindowReady()) {
+        TraceLog(LOG_ERROR, "Failed to initialize window");
+        return 1;
+    }
+
     Sprite* logo = CreateSprite("assets/raylib_logo.png", (Vector2){0, 0});
+    if (logo == NULL) {
+        TraceLog(LOG_ERROR, "Failed to create sprite");
+        CloseWindow();
+        return 1;
+    }
+
     logo->position = (Vector2){
         (screenWidth / 2) - (logo->texture.width / 2),
         (screenHeight / 2) - (logo->texture.height / 2)
@@ -19,16 +31,12 @@ int main(void)
     while (!WindowShouldClose())
     {
         BeginDrawing();
-
         ClearBackground(RAYWHITE);
-
         DrawSprite(logo);
-
         EndDrawing();
     }
 
     DestroySprite(logo);
-
     CloseWindow();
 
     return 0;
