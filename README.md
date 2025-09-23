@@ -8,8 +8,8 @@ This is a 2D game engine built with Raylib and QuickJS, as described in the `ray
 
 This is a list of the main components from the design document that need to be implemented.
 
-- [ ] Rendering & Visuals
-- [ ] Input & Controls
+- [x] Rendering & Visuals
+- [x] Input & Controls
 - [ ] Audio & Music
 - [ ] Physics & Collisions
 - [ ] Scripting & Modding (QuickJS)
