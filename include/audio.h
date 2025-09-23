@@ -2,6 +2,7 @@
 #define AUDIO_H
 
 #include "raylib.h"
+#include <stdbool.h>
 
 // Enum for different sound effects
 typedef enum {
@@ -28,5 +29,11 @@ void Audio_PlayMusic(MusicTrack music);
 void Audio_UpdateMusic(void); // Needed for music streaming
 
 void Audio_SetMasterVolume(float volume);
+
+// New functions for looping and fading
+void Audio_SetMusicLoop(MusicTrack music_track, bool loop);
+void Audio_FadeInMusic(MusicTrack music_track, float duration);
+void Audio_FadeOutMusic(float duration);
+
 
 #endif // AUDIO_H

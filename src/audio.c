@@ -3,12 +3,33 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
+
+typedef enum {
+    FADE_NONE,
+    FADE_IN,
+    FADE_OUT
+} FadeState;
+
+typedef struct {
+    bool loop;
+    FadeState fade_state;
+    float fade_duration;
+    float fade_timer;
+    float volume;
+} MusicState;
 
 static Sound sounds[MAX_SOUND_EFFECTS];
 static Music music[MAX_MUSIC_TRACKS];
+static MusicState music_states[MAX_MUSIC_TRACKS];
+static MusicTrack current_music_track = -1;
 
 void Audio_Init(void) {
     InitAudioDevice();
+
+    for (int i = 0; i < MAX_MUSIC_TRACKS; i++) {
+        music_states[i] = (MusicState){ .loop = false, .fade_state = FADE_NONE, .fade_duration = 0.0f, .fade_timer = 0.0f, .volume = 1.0f };
+    }
 
     // Default master volume
     float masterVolume = 1.0f;
@@ -87,17 +108,77 @@ void Audio_PlaySound(SoundEffect sound) {
 void Audio_PlayMusic(MusicTrack music_track) {
     if (music_track < MAX_MUSIC_TRACKS) {
         PlayMusicStream(music[music_track]);
+        current_music_track = music_track;
     }
 }
 
 void Audio_UpdateMusic(void) {
-    for (int i = 0; i < MAX_MUSIC_TRACKS; i++) {
-        if (IsMusicStreamPlaying(music[i])) {
-            UpdateMusicStream(music[i]);
+    if (current_music_track < 0) return;
+
+    Music m = music[current_music_track];
+    MusicState *state = &music_states[current_music_track];
+
+    if (IsMusicStreamPlaying(m)) {
+        UpdateMusicStream(m);
+
+        if (state->fade_state != FADE_NONE) {
+            state->fade_timer += GetFrameTime();
+            if (state->fade_timer > state->fade_duration) {
+                state->fade_timer = state->fade_duration;
+            }
+
+            if (state->fade_state == FADE_IN) {
+                state->volume = state->fade_timer / state->fade_duration;
+            } else if (state->fade_state == FADE_OUT) {
+                state->volume = 1.0f - (state->fade_timer / state->fade_duration);
+            }
+
+            SetMusicVolume(m, state->volume);
+
+            if (state->fade_timer >= state->fade_duration) {
+                if (state->fade_state == FADE_OUT) {
+                    StopMusicStream(m);
+                    current_music_track = -1;
+                }
+                state->fade_state = FADE_NONE;
+            }
+        }
+
+        // Check for looping
+        if (state->loop && GetMusicTimePlayed(m) >= GetMusicTimeLength(m) - 0.1f) {
+            SeekMusicStream(m, 0);
+            PlayMusicStream(m);
         }
     }
 }
 
 void Audio_SetMasterVolume(float volume) {
     SetMasterVolume(volume);
+}
+
+void Audio_SetMusicLoop(MusicTrack music_track, bool loop) {
+    if (music_track < MAX_MUSIC_TRACKS) {
+        music_states[music_track].loop = loop;
+    }
+}
+
+void Audio_FadeInMusic(MusicTrack music_track, float duration) {
+    if (music_track < MAX_MUSIC_TRACKS) {
+        Audio_PlayMusic(music_track);
+        MusicState *state = &music_states[music_track];
+        state->fade_state = FADE_IN;
+        state->fade_duration = duration;
+        state->fade_timer = 0.0f;
+        state->volume = 0.0f;
+        SetMusicVolume(music[music_track], 0.0f);
+    }
+}
+
+void Audio_FadeOutMusic(float duration) {
+    if (current_music_track >= 0) {
+        MusicState *state = &music_states[current_music_track];
+        state->fade_state = FADE_OUT;
+        state->fade_duration = duration;
+        state->fade_timer = 0.0f;
+    }
 }
