@@ -5,7 +5,7 @@ CC = gcc
 CFLAGS = -Iinclude -Llib -lraylib -lm -lpthread -ldl -lrt -lX11
 
 # Source files
-SRCS = src/main.c src/input.c
+SRCS = src/main.c src/input.c src/audio.c
 
 # Object files
 OBJS = $(SRCS:.c=.o)

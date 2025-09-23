@@ -8,5 +8,8 @@
         "ACTION_GAMEPAD_ATTACK": { "type": "GAMEPAD_BUTTON", "binding": 2 },
         "ACTION_HORIZONTAL_AXIS": { "type": "GAMEPAD_AXIS", "binding": 0 },
         "ACTION_VERTICAL_AXIS": { "type": "GAMEPAD_AXIS", "binding": 1 }
+    },
+    "audio": {
+        "masterVolume": 0.8
     }
 }
