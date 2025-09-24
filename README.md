@@ -10,7 +10,7 @@ This is a list of the main components from the design document that need to be i
 
 - [x] Rendering & Visuals
 - [x] Input & Controls
-- [ ] Audio & Music
+- [x] Audio & Music
 - [ ] Physics & Collisions
 - [ ] Scripting & Modding (QuickJS)
 - [ ] Game Mode / Scene System
